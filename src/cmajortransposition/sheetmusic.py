@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# Import warnings library to write warning messages
+import warnings
+
 # Import the tools related to the notes
 import cmajortransposition.notetools as NoteTools
 
@@ -24,6 +27,23 @@ class SheetMusic:
 
     get_notes_as_str(self)
         Get the notes as a list of strings
+
+    set_notes(self, new_notes)
+        Modify all the notes of the sheet music
+
+    is_transposable_in_c_major(self)
+        Check if the sheet music is transposable in C major (ie with no accidental)
+
+    transpose_in_c_major(self)
+        Transpose the sheet music in C major if it is possible
+
+    get_transposition_in_c_major_description(self)
+        Check if the sheet music is transposable in C major (ie with no accidental),
+        and if it is, return the number of tones to add
+
+    def get_transposition_in_c_major_description_helper(self, notes, tones_added=0)
+        Helper to check if the sheet music is transposable in C major
+        (ie with no accidental), and if it is, return the number of tone to add
     """
 
     def __init__(self,notes=[]):
@@ -111,7 +131,7 @@ class SheetMusic:
             A sequence of string representing the different notes of the sheet music.
             If the note is not contained in the reference octave,
             an octave number is added between parenthesis.
-            
+
             Examples
             --------
             C# is written C#/Db.
@@ -135,3 +155,157 @@ class SheetMusic:
 
         # Return the names array
         return notes_names
+
+    def set_notes(self, new_notes):
+        """
+        Modify all the notes of the sheet music
+
+        Parameters
+        ----------
+        new_notes: list
+            A list of int representing the new notes of the sheet music
+
+        Raises
+        ------
+        ValueError
+            If the parameter does not present a correct format.
+        """
+
+        # Check if the notes are integers
+        if isinstance(new_notes, list):
+            for note in new_notes:
+                if not isinstance(note, int):
+                    raise ValueError("The new_notes argument is not an int array")
+        else:
+            raise ValueError("The new_notes argument is not an int array")
+
+        self.notes = new_notes
+
+    def is_transposable_in_c_major(self):
+        """
+        Check if the sheet music is transposable in C major (ie with no accidental)
+
+        Returns
+        -------
+        bool
+            Whether or not it is transposable:
+            True if it is
+            False if it is not
+        """
+
+        return self.get_transposition_in_c_major_description()["transposable"]
+
+    def transpose_in_c_major(self):
+        """
+        Transpose the sheet music in C major if it is possible
+
+        Returns
+        -------
+        list
+            A list of integers representing notes: the transposed sheet music if
+            the latter is transposable, the original sheet music otherwise
+        """
+        # Get if the transposition is possible, and if so, get the number of
+        # tones to add to the notes
+        transposition_description = self.get_transposition_in_c_major_description()
+
+        # If the sheet music is not transposable in C major, print a warning
+        if not transposition_description["transposable"]:
+            warnings.warn("The sheet music can not be transposed in C major.", UserWarning)
+            return self.notes
+
+        # If the sheet music is transposable in C major, transpose it
+        tones_to_add = transposition_description['tones_added']
+        new_notes = []
+        for note in self.notes:
+            new_notes.append(note+tones_to_add)
+        return new_notes
+
+    def get_transposition_in_c_major_description(self):
+        """
+        Check if the sheet music is transposable in C major (ie with no accidental),
+        and if it is, return the number of tones to add
+
+        Returns
+        -------
+        dict
+            A dictionary presenting the following format:
+            {
+                "transposable": True,
+                "tones_added": 3
+            }
+        """
+        # Get a dict of all the different notes in the partition
+        reference_notes = []
+        for n in self.notes:
+            reference_notes.append(n%12)
+        all_notes = set(reference_notes)
+
+        return self.get_transposition_in_c_major_description_helper(all_notes)
+
+    def get_transposition_in_c_major_description_helper(self, notes, tones_added=0):
+        """
+        Helper to check if the sheet music is transposable in C major
+        (ie with no accidental), and if it is, return the number of tone to add
+
+        Parameters
+        ----------
+        notes: set
+            A set of notes to transpose
+
+        tones_added: int
+            Number of tones to try to add to each note in order to transpose
+            the sheet music in C major (Default: 0)
+
+        Returns
+        -------
+        dict
+            A dictionary presenting the following format:
+            {
+                "transposable": True,
+                "tones_added": 3
+            }
+            (In this one, for instance, 3 tones are added to the notes to
+            transpose the sheet music in C major)
+
+            If the transposition is impossible, the returned dictionary is:
+            {
+                "transposable": False,
+                "tones_added": 0
+            }
+
+        Raises
+        ------
+        ValueError
+            If the parameter does not present a correct format.
+        """
+
+        # Check if the notes are integers
+        if isinstance(notes, set):
+            for note in notes:
+                if not isinstance(note, int):
+                    raise ValueError("The notes argument is not a set of integers")
+        else:
+            raise ValueError("The notes argument is not a set of integers")
+
+        # Check if tones_added is an integers
+        if not isinstance(tones_added, int):
+            raise ValueError("The notes argument is not a set of integers")
+
+        # Get all the notes of C major
+        c_major_notes = NoteTools.get_c_major_notes()
+
+        # Check if there are accidentals in the notes, if so return True
+        if (notes.issubset(c_major_notes)):
+            return {"transposable": True, "tones_added": tones_added}
+
+        # If we have done 12 transposition without getting only the C major
+        # notes, return False
+        if (tones_added > 11):
+            return {"transposable": False, "tones_added": 0}
+
+        # Otherwise, try transpositions
+        new_notes = []
+        for old_note in notes:
+            new_notes.append((old_note+1)%12)
+        return self.get_transposition_in_c_major_description_helper(set(new_notes), tones_added+1)
