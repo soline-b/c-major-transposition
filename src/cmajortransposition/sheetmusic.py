@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# Import warnings library to write warning messages
+import warnings
+
 # Import the tools related to the notes
 import cmajortransposition.notetools as NoteTools
 
@@ -24,6 +27,23 @@ class SheetMusic:
 
     get_notes_as_str(self)
         Get the notes as a list of strings
+
+    set_notes(self, new_notes)
+        Modify all the notes of the sheet music
+
+    is_transposable_in_c_major(self)
+        Check if the sheet music is transposable in C major (ie with no accidental)
+
+    transpose_in_c_major(self)
+        Transpose the sheet music in C major if it is possible
+
+    get_transposition_in_c_major_description(self)
+        Check if the sheet music is transposable in C major (ie with no accidental),
+        and if it is, return the number of tones to add
+
+    def get_transposition_in_c_major_description_helper(self, notes, tones_added=0)
+        Helper to check if the sheet music is transposable in C major
+        (ie with no accidental), and if it is, return the number of tone to add
     """
 
     def __init__(self,notes=[]):
@@ -136,6 +156,31 @@ class SheetMusic:
         # Return the names array
         return notes_names
 
+    def set_notes(self, new_notes):
+        """
+        Modify all the notes of the sheet music
+
+        Parameters
+        ----------
+        new_notes: list
+            A list of int representing the new notes of the sheet music
+
+        Raises
+        ------
+        ValueError
+            If the parameter does not present a correct format.
+        """
+
+        # Check if the notes are integers
+        if isinstance(new_notes, list):
+            for note in new_notes:
+                if not isinstance(note, int):
+                    raise ValueError("The new_notes argument is not an int array")
+        else:
+            raise ValueError("The new_notes argument is not an int array")
+
+        self.notes = new_notes
+
     def is_transposable_in_c_major(self):
         """
         Check if the sheet music is transposable in C major (ie with no accidental)
@@ -150,10 +195,36 @@ class SheetMusic:
 
         return self.get_transposition_in_c_major_description()["transposable"]
 
+    def transpose_in_c_major(self):
+        """
+        Transpose the sheet music in C major if it is possible
+
+        Returns
+        -------
+        list
+            A list of integers representing notes: the transposed sheet music if
+            the latter is transposable, the original sheet music otherwise
+        """
+        # Get if the transposition is possible, and if so, get the number of
+        # tones to add to the notes
+        transposition_description = self.get_transposition_in_c_major_description()
+
+        # If the sheet music is not transposable in C major, print a warning
+        if not transposition_description["transposable"]:
+            warnings.warn("The sheet music can not be transposed in C major.", UserWarning)
+            return self.notes
+
+        # If the sheet music is transposable in C major, transpose it
+        tones_to_add = transposition_description['tones_added']
+        new_notes = []
+        for note in self.notes:
+            new_notes.append(note+tones_to_add)
+        return new_notes
+
     def get_transposition_in_c_major_description(self):
         """
         Check if the sheet music is transposable in C major (ie with no accidental),
-        and if it is, return the number of tone to add
+        and if it is, return the number of tones to add
 
         Returns
         -------
@@ -171,8 +242,6 @@ class SheetMusic:
         all_notes = set(reference_notes)
 
         return self.get_transposition_in_c_major_description_helper(all_notes)
-
-
 
     def get_transposition_in_c_major_description_helper(self, notes, tones_added=0):
         """
