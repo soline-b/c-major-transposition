@@ -39,3 +39,42 @@ class TestSheetMusic(unittest.TestCase):
         """ Check the return of the notes as strings """
         a_sheet_music = sheetmusic.SheetMusic(notes['in'])
         assert a_sheet_music.get_notes_as_str() == notes['out']
+
+    @params({'notes': [1,5], 'transposable': True},
+            {'notes': [0], 'transposable': True},
+            {'notes': [0,1,2], 'transposable': False},
+            {'notes': [-12,30], 'transposable': True})
+    def test_is_transposable_in_c_major(self, notes_description):
+        """ Check if a music sheet is transposable in C major """
+        a_sheet_music = sheetmusic.SheetMusic(notes_description['notes'])
+        assert a_sheet_music.is_transposable_in_c_major() == notes_description['transposable']
+
+    @params({'notes': [1,5], 'out': {'transposable': True, 'tones_added': 4}},
+            {'notes': [0], 'out': {'transposable': True, 'tones_added': 0}},
+            {'notes': [0,1,2], 'out': {'transposable': False, 'tones_added': 0}},
+            {'notes': [-12,30], 'out': {'transposable': True, 'tones_added': 5}})
+    def test_get_transposition_in_c_major_description(self, notes_description):
+        """
+        Check if a music sheet is transposable and the number of tones
+        to transpose it if it is
+        """
+        a_sheet_music = sheetmusic.SheetMusic(notes_description['notes'])
+        assert a_sheet_music.get_transposition_in_c_major_description() == notes_description['out']
+
+    def test_get_transposition_in_c_major_description_helper_wrong_param1_int(self):
+        """ Check if an error occurs if a bad parameter is submitted """
+        a_sheet_music = sheetmusic.SheetMusic([1,2,3])
+        with self.assertRaises(ValueError):
+            a_sheet_music.get_transposition_in_c_major_description_helper(12)
+
+    def test_get_transposition_in_c_major_description_helper_wrong_param1_set(self):
+        """ Check if an error occurs if a bad parameter is submitted """
+        a_sheet_music = sheetmusic.SheetMusic([1,2,3])
+        with self.assertRaises(ValueError):
+            a_sheet_music.get_transposition_in_c_major_description_helper(set(["a","b","b"]))
+
+    def test_get_transposition_in_c_major_description_helper_wrong_param2(self):
+        """ Check if an error occurs if a bad parameter is submitted """
+        a_sheet_music = sheetmusic.SheetMusic([1,2,3])
+        with self.assertRaises(ValueError):
+            a_sheet_music.get_transposition_in_c_major_description_helper(set([1,2,2]), 'a')

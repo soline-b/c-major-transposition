@@ -181,9 +181,12 @@ class SheetMusic:
 
         Parameters
         ----------
+        notes: set
+            A set of notes to transpose
+
         tones_added: int
             Number of tones to try to add to each note in order to transpose
-            the sheet music in C major
+            the sheet music in C major (Default: 0)
 
         Returns
         -------
@@ -193,7 +196,33 @@ class SheetMusic:
                 "transposable": True,
                 "tones_added": 3
             }
+            (In this one, for instance, 3 tones are added to the notes to
+            transpose the sheet music in C major)
+
+            If the transposition is impossible, the returned dictionary is:
+            {
+                "transposable": False,
+                "tones_added": 0
+            }
+
+        Raises
+        ------
+        ValueError
+            If the parameter does not present a correct format.
         """
+
+        # Check if the notes are integers
+        if isinstance(notes, set):
+            for note in notes:
+                if not isinstance(note, int):
+                    raise ValueError("The notes argument is not a set of integers")
+        else:
+            raise ValueError("The notes argument is not a set of integers")
+
+        # Check if tones_added is an integers
+        if not isinstance(tones_added, int):
+            raise ValueError("The notes argument is not a set of integers")
+
         # Get all the notes of C major
         c_major_notes = NoteTools.get_c_major_notes()
 
@@ -209,5 +238,5 @@ class SheetMusic:
         # Otherwise, try transpositions
         new_notes = []
         for old_note in notes:
-            new_notes.append(old_note+1)
+            new_notes.append((old_note+1)%12)
         return self.get_transposition_in_c_major_description_helper(set(new_notes), tones_added+1)
