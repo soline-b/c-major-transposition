@@ -2,24 +2,27 @@
 # -*- coding: utf-8 -*-
 
 """
-Tests for "sheetmusic" in c-major-transposition
+Tests for "sheetmusic" in cmajortransposition
 """
 
+# Import the testing libraries
 import unittest
 from nose2.tools import params
 
 # Import the functons to test from the cmajortransposition.sheetmusic package
 from cmajortransposition import sheetmusic
 
-# This is a temporary class in order to test the structure of the project
 class TestSheetMusic(unittest.TestCase):
+    """
+    A set of tests for sheetmusic
+    """
 
-    def test_init_wrong_attribute_list(self):
-        """ Check if an error occurs if a bad attribute is submitted in the SheetMusic creation """
+    def test_init_wrong_parameter_list(self):
+        """ Check if an error occurs if a bad parameter is submitted in the SheetMusic creation """
         self.assertRaises(ValueError, sheetmusic.SheetMusic, ["test"])
 
-    def test_init_wrong_attribute_int(self):
-        """ Check if an error occurs if a bad attribute is submitted in the SheetMusic creation """
+    def test_init_wrong_parameter_int(self):
+        """ Check if an error occurs if a bad parameter is submitted in the SheetMusic creation """
         self.assertRaises(ValueError, sheetmusic.SheetMusic, 12)
 
     @params([3,5,9,0,15], [])

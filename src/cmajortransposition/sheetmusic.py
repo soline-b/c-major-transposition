@@ -1,23 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# Import the tools related to the notes
+import cmajortransposition.notetools as NoteTools
+
 """
 Description of a sheet music
 
 Tools to handle a sheet music's data and the operations that can be done on it.
 """
 
-# Store the equivalence between integers and notes'names
-notes_equivalences = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"]
-
 class SheetMusic:
     """
     A sheet music is a sequence of different notes
-
-    Attributes
-    ----------
-    notes_equivalences: list
-        A sequence presenting the names of the 12 tones composing an octave.
 
     Methods
     -------
@@ -116,6 +111,7 @@ class SheetMusic:
             A sequence of string representing the different notes of the sheet music.
             If the note is not contained in the reference octave,
             an octave number is added between parenthesis.
+            
             Examples
             --------
             C# is written C#/Db.
@@ -127,22 +123,14 @@ class SheetMusic:
 
         # Format the notes in order to display their names
         for note in self.notes:
-            # If the note is from lower octaves
-            if note < 0:
-                note_str = notes_equivalences[note%12]
-                if note_str == 'C':
-                    octave_number = int(note/12)
-                else:
-                    octave_number = int(note/12)-1
-                note_name = "{0}({1})".format(note_str,octave_number)
-            # If the note is from the current octave
-            elif note < 12:
-                note_name = notes_equivalences[note%12]
-            # If the node is from higher octaves
-            else:
-                octave_number = int(note/12)
-                note_name = "{0}({1})".format(notes_equivalences[note%12],octave_number)
+            note_description = NoteTools.get_name_and_octave(note)
 
+            if note_description["octave"] == 0:
+                note_name = note_description["name"]
+            else:
+                note_name = "{0}({1})".format(note_description["name"],note_description["octave"])
+
+            # Add the formatted note to the return array
             notes_names.append(note_name)
 
         # Return the names array
