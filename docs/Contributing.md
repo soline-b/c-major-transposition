@@ -72,7 +72,7 @@ Implementing a new feature or a new fix implies three main concerns:
 The testing is done with `nose2` and `unittest`. The unit tests are launched by a GitHub Actions workflow each time a pull request or a push is done on the branches `main` and `develop`.
 
 ## Workflows
-For now, one worflow has been set up. It is described in `.github/worflows/testing.yml`.
+For now, one worflow has been set up. Its configuration file is `.github/worflows/testing.yml`, and it is more detailed in the [Workflow section](Workflows.md).
 
 ## Submitting a new version
 When new content is added to the `main` branch, two steps are manually done:
