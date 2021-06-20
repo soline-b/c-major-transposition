@@ -111,7 +111,7 @@ class SheetMusic:
             A sequence of string representing the different notes of the sheet music.
             If the note is not contained in the reference octave,
             an octave number is added between parenthesis.
-            
+
             Examples
             --------
             C# is written C#/Db.
@@ -135,3 +135,79 @@ class SheetMusic:
 
         # Return the names array
         return notes_names
+
+    def is_transposable_in_c_major(self):
+        """
+        Check if the sheet music is transposable in C major (ie with no accidental)
+
+        Returns
+        -------
+        bool
+            Whether or not it is transposable:
+            True if it is
+            False if it is not
+        """
+
+        return self.get_transposition_in_c_major_description()["transposable"]
+
+    def get_transposition_in_c_major_description(self):
+        """
+        Check if the sheet music is transposable in C major (ie with no accidental),
+        and if it is, return the number of tone to add
+
+        Returns
+        -------
+        dict
+            A dictionary presenting the following format:
+            {
+                "transposable": True,
+                "tones_added": 3
+            }
+        """
+        # Get a dict of all the different notes in the partition
+        reference_notes = []
+        for n in self.notes:
+            reference_notes.append(n%12)
+        all_notes = set(reference_notes)
+
+        return self.get_transposition_in_c_major_description_helper(all_notes)
+
+
+
+    def get_transposition_in_c_major_description_helper(self, notes, tones_added=0):
+        """
+        Helper to check if the sheet music is transposable in C major
+        (ie with no accidental), and if it is, return the number of tone to add
+
+        Parameters
+        ----------
+        tones_added: int
+            Number of tones to try to add to each note in order to transpose
+            the sheet music in C major
+
+        Returns
+        -------
+        dict
+            A dictionary presenting the following format:
+            {
+                "transposable": True,
+                "tones_added": 3
+            }
+        """
+        # Get all the notes of C major
+        c_major_notes = NoteTools.get_c_major_notes()
+
+        # Check if there are accidentals in the notes, if so return True
+        if (notes.issubset(c_major_notes)):
+            return {"transposable": True, "tones_added": tones_added}
+
+        # If we have done 12 transposition without getting only the C major
+        # notes, return False
+        if (tones_added > 11):
+            return {"transposable": False, "tones_added": 0}
+
+        # Otherwise, try transpositions
+        new_notes = []
+        for old_note in notes:
+            new_notes.append(old_note+1)
+        return self.get_transposition_in_c_major_description_helper(set(new_notes), tones_added+1)

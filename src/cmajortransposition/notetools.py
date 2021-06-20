@@ -9,6 +9,17 @@ Tools for operations relative to musical notes
 # presenting the names of the 12 tones composing an octave.
 notes_equivalences = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"]
 
+def get_c_major_notes():
+    """
+    Return a list of the integers corresponding to the C-major notes
+
+    Returns
+    -------
+    list
+        List of the integers representing the non accidentals notes
+    """
+    return [0,2,4,5,7,9,11]
+
 def get_name_and_octave(note):
     """
     Retrieve the note name and the octave corresponding to an integer
