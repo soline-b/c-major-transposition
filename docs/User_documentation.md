@@ -2,9 +2,20 @@
 
 ## Overview
 
-## Quick start
+`cmajortransposition` is an OpenSource Python module implemented using the version Python 3.8.5.
+Its purpose is to transpose a sheet music to C major key.
 
-## Examples
+## Getting started
+
+### Installation
+
+To install the project, `pip` can be used as follows:
+
+```
+pip install -i https://test.pypi.org/simple/ cmajortransposition
+```
+
+### Examples
 
 In this example, we learn to:
 1. Create a sheet music
