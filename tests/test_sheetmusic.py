@@ -31,7 +31,7 @@ class TestSheetMusic(unittest.TestCase):
 
     @params({'in': [0,2,4,5,7,9,11], 'out': ['C','D','E','F','G','A','B']},
             {'in': [], 'out': []},
-            {'in': [-25,3,2,0,-12,-6,-4,5,8,24,12,0,2,1,1], 'out': ['B-3','D#/Eb','D','C','C-2','F#/Gb-1','G#/Ab-1','F','G#/Ab','C2','C1','C','D','C#/Db','C#/Db']})
+            {'in': [-25,3,2,0,-12,-6,-4,5,8,24,12,0,2,1,1], 'out': ['B(-3)','D#/Eb','D','C','C(-1)','F#/Gb(-1)','G#/Ab(-1)','F','G#/Ab','C(2)','C(1)','C','D','C#/Db','C#/Db']})
     def test_display_notes(self, notes):
         """ Check the return of the notes as strings """
         a_sheet_music = sheetmusic.SheetMusic(notes['in'])
