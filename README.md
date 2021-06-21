@@ -19,3 +19,4 @@ pip install -i https://test.pypi.org/simple/ cmajortransposition
 | Version | Date            |
 | ------- | --------------- |
 | 0.0.1   | June 19th, 2021 |
+| 0.0.2   | June 21st, 2021 |
